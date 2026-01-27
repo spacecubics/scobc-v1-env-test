@@ -1,0 +1,16 @@
+[Unit]
+Description=SC-OBC Module V1 Environment Test for APU
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/scobc-v1-env-test/run.sh
+WorkingDirectory=/opt/scobc-v1-env-test/
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+User=root
+
+[Install]
+WantedBy=multi-user.target
