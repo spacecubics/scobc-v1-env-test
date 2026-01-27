@@ -2,7 +2,6 @@
 
 PIDS=""
 DATE="$(date +%Y%m%d_%H%M%S)"
-LOG_DIR="log/$DATE"
 MY_ADDR=10.30.0.123
 GATEWAY_ADDR=10.30.0.234
 
@@ -29,14 +28,13 @@ fi
 
 echo "Test started at $DATE: $(echo "$tests" | xargs)"
 
-mkdir -p "$LOG_DIR"
 for test in $tests; do
     if [ ! -f "tests/${test}.sh" ]; then
         echo "Test not found: ${test}"
         continue
     fi
 
-    "tests/${test}.sh" | tee "${LOG_DIR}/${test}.log" &
+    "tests/${test}.sh" &
     PIDS="$! $PIDS"
 done
 
