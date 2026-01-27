@@ -53,4 +53,7 @@ do
     fi
 
     sleep 1
-done
+done &
+
+sleep 300
+reboot
