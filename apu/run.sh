@@ -3,6 +3,8 @@
 PIDS=""
 DATE="$(date +%Y%m%d_%H%M%S)"
 LOG_DIR="log/$DATE"
+MY_ADDR=10.30.0.123
+GATEWAY_ADDR=10.30.0.234
 
 abort() {
     echo ""
@@ -37,6 +39,10 @@ for test in $tests; do
     "tests/${test}.sh" | tee "${LOG_DIR}/${test}.log" &
     PIDS="$! $PIDS"
 done
+
+ip addr flush dev end0
+ip addr add "$MY_ADDR"/24 dev end0
+ip route add default via "$GATEWAY_ADDR" dev end0
 
 while :
 do
