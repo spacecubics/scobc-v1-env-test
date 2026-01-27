@@ -16,6 +16,25 @@ error () {
     printf '\033[1;31mNOR Flash: %s (%d)\033[0m\n' "$1" "$((++ERROR_COUNT))"
 }
 
+get_chip_num () {
+    case "$1" in
+        lpd)
+            LABEL="versal_gpio"
+            ;;
+        pmc)
+            LABEL="pmc_gpio"
+            ;;
+        pl)
+            LABEL="\.gpio"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+
+    gpiodetect | grep "$LABEL" | awk '{print $1}' | sed 's/gpiochip//g'
+}
+
 switch_nor_bank () {
     BANK="$1"
 
@@ -33,7 +52,7 @@ switch_nor_bank () {
 
     # In libgpiod2, gpioset does not exit on SIGKILL immediately,
     # so we need to kill -9 and wait
-    gpioset -c 1 50="$GPIO_VALUE" 2> /dev/null &
+    gpioset -c "$(get_chip_num pmc)" 50="$GPIO_VALUE" 2> /dev/null &
     PID=$!
     sleep 0.1
 
