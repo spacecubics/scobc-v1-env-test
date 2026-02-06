@@ -4,6 +4,8 @@ PIDS=""
 DATE="$(date +%Y%m%d_%H%M%S)"
 MY_ADDR=10.30.0.123
 GATEWAY_ADDR=10.30.0.234
+CONSOLE_DEV=/dev/ttyAMA0
+CYCLE_SEC=180
 
 abort() {
     echo ""
@@ -34,7 +36,7 @@ for test in $tests; do
         continue
     fi
 
-    "tests/${test}.sh" &
+    "tests/${test}.sh" | tee "$CONSOLE_DEV" &
     PIDS="$! $PIDS"
 done
 
@@ -59,5 +61,5 @@ do
     sleep 1
 done &
 
-sleep 300
+sleep "$CYCLE_SEC"
 reboot
