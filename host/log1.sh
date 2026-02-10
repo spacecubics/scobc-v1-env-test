@@ -29,4 +29,4 @@ esac
 
 mkdir -p "$LOG_DIR"
 
-tio -t -L --log-append --log-file "${LOG_DIR}/${LOG_NAME}.log" "$TTY_DEVICE"
+tio -t -l --log-append --log-file "${LOG_DIR}/${LOG_NAME}.log" "$TTY_DEVICE"
