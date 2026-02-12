@@ -28,6 +28,8 @@ else
     tests="$(echo $* | xargs -n1 | sort | uniq | xargs)"
 fi
 
+echo "Waiting for 10s..."
+sleep 10
 echo "Test started at $DATE: $(echo "$tests" | xargs)"
 
 for test in $tests; do

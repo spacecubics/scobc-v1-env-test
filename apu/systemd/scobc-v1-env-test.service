@@ -11,6 +11,11 @@ RestartSec=2
 StandardOutput=journal
 StandardError=journal
 User=root
+StandardOutput=tty
+StandardError=tty
+TTYPath=/dev/ttyAMA0
+TTYReset=yes
+TTYVHangup=yes
 
 [Install]
 WantedBy=multi-user.target
