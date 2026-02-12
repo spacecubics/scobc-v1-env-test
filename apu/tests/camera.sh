@@ -17,6 +17,10 @@ error () {
 while :
 do
     rm -f "$VIDEO_OUT"
+
+    # Workaround for the camera issue
+    i2cdetect -y 1 > /dev/null 2>&1
+
     v4l2-ctl -d "$VIDEO_DEV" --stream-mmap=6 --stream-count=1 --stream-to=/tmp/frame.praa > /dev/null 2>&1
 
     if [ -f "$VIDEO_OUT" ]; then
