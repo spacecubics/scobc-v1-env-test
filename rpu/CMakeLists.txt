@@ -5,4 +5,6 @@ project(scobc-v1-env-test)
 
 target_sources(app PRIVATE
   src/main.c
-  src/versal_sysmon.c)
+  src/versal_sysmon.c
+  src/ddr_test.c
+)

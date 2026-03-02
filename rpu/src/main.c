@@ -2,13 +2,19 @@
 #include <zephyr/shell/shell.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/drivers/gpio.h>
 #include "versal_sysmon.h"
+#include "ddr_test.h"
 
 #define RPU_TEST_STACK_SZ	2048
 #define RPU_TEST_PRIO	 	5
+#define TEST_CYCLE_SEC		180
+#define ZU_NODE DT_PATH(zephyr_user)
 
 K_THREAD_STACK_DEFINE(log_temp_stack, RPU_TEST_STACK_SZ);
 K_THREAD_STACK_DEFINE(stress_stack, RPU_TEST_STACK_SZ);
+
+static const struct gpio_dt_spec pc = GPIO_DT_SPEC_GET(ZU_NODE, power_cycle_gpios);
 
 static struct k_thread log_temp_thread;
 static struct k_thread stress_thread;
@@ -32,7 +38,7 @@ static void log_temp(void *p1, void *p2, void *p3)
 
 	atomic_clear(&rpu_test_stop_req);
 
-	while (!atomic_get(&rpu_test_stop_req)) {
+	while (!atomic_get(&rpu_test_stop_req) && (count < TEST_CYCLE_SEC)) {
 		now = k_uptime_get_32();
 		remain = (int32_t)(next_ms - now);
 		if (remain > 0) {
@@ -48,6 +54,12 @@ static void log_temp(void *p1, void *p2, void *p3)
 	}
 
 	atomic_clear(&rpu_test_running);
+
+	if (count >= TEST_CYCLE_SEC) {
+		printk("Rebooting...\n");
+		k_sleep(K_MSEC(100));
+		gpio_pin_set_dt(&pc, 1);
+	}
 }
 
 static void stress(void *p1, void *p2, void *p3)
@@ -221,6 +233,13 @@ SHELL_CMD_REGISTER(test, &rpu_test_subs, "Start/Stop the RPU test", NULL);
 
 int main(void)
 {
+	if (!gpio_is_ready_dt(&pc)) {
+		printk("Power cycle GPIO not ready\n");
+		return -ENODEV;
+	}
+
+	gpio_pin_configure_dt(&pc, GPIO_OUTPUT_INACTIVE);
+
 	rpu_test_start();
 	apu_stop();
 	return 0;
