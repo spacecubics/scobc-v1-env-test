@@ -54,7 +54,7 @@ switch_nor_bank () {
     # so we need to kill -9 and wait
     gpioset -c "$(get_chip_num pmc)" 50="$GPIO_VALUE" 2> /dev/null &
     PID=$!
-    sleep 0.1
+    sleep 3
 
     kill -9 "$PID" > /dev/null 2>&1
     wait "$PID" > /dev/null 2>&1
